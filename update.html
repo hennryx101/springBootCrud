@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form class="form-update">
+        <div class="productName">
+            <label for="product">Product name</label>
+            <input type="text" class="product" th:value="${product.product}">
+        </div>
+
+        <div class="productPrice">
+            <label for="price">Price</label>
+            <input type="text" class="price" th:value="${product.price}">
+        </div>
+        <input type="hidden" class="id" th:value="${product.id}">
+        <button type="submit" class="submit" onclick="updateProduct()">Submit</button>
+    </form>
+
+    <script>
+        async function updateProduct(){
+
+            const product = document.querySelector(".product").value;
+            const price = document.querySelector(".price").value;
+            const id = document.querySelector(".id").value;
+            
+            const data = {
+                product: product,
+                price: price
+            }
+            
+            fetch('/update-product/'+ id, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response =>{
+                    if(response.ok){
+                        window.location.href = "/index";
+                    }
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>

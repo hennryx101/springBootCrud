@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form class="form">
+        <div class="product">
+            <label for="product-name">Product name</label>
+            <input type="text" class="product-name" required>
+        </div>
+        <div class="price">
+            <label for="product-price">Price</label>
+            <input type="text" class="product-price" required>
+        </div>
+        <button type="submit" class="submit">Save</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>PRODUCT</th>
+                <th>PRICE</th>
+                <th>ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each = "product : ${product}">
+                <td th:text="${product.id}"></td>
+                <td th:text="${product.product}"></td>
+                <td th:text="${product.price}"></td>
+                <td>
+                    <button th:onclick="@{'deleteProduct(' + ${product.id} + ');'}">Delete</button>
+                    <button th:onclick="@{'updateProduct(' + ${product.id} + ');'}">Update</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <Script>
+        async function baseFetch(url, method='GET', data=null) {
+            const response = await fetch(url, {
+                method, 
+                mode: "cors", 
+                cache: "no-cache", 
+                credentials: "same-origin", 
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow", 
+                referrerPolicy: "no-referrer", 
+                body: (data != null) ? JSON.stringify(data) : null, 
+            });
+
+            return await response.json();
+        }
+        
+        const submit = document.querySelector(".submit");
+        submit.addEventListener('click', e  => {
+            const name = document.querySelector('.product-name').value;
+            const price = document.querySelector('.product-price');
+            const priceValue = price.value;
+              
+            if(/^\d+$/.test(priceValue) != true){
+                return alert("price field can only be numbers");
+            } else if(name === "" && priceValue === ""){
+                return alert("Some fields are empty");
+                
+            }
+
+            let data = {
+                    id: null,
+                    product: name,
+                    price: priceValue
+                };
+                baseFetch("/insert", "POST", data);
+                alert("New product is added");
+                window.location.reload();
+        });
+
+        async function deleteProduct(id){
+            let confirmDel = confirm("Are you sure you want to delete this product?");
+
+            if(confirmDel){
+                baseFetch("/delete/" + id, "DELETE");
+                window.location.reload();
+            }
+            windows.location.reload();
+        }
+
+        async function updateProduct(id){
+            console.log(id);
+            // baseFetch("/update/" + id, "UPDATE");
+            window.location.href=`/update/${id}`;
+        }
+    </Script>
+</body>
+</html>
